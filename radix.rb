@@ -1,33 +1,32 @@
-# attempt to create radix sort using low level techniques
+# attempt to create radix (multi-digit) sort using low level techniques
 
 def radix(list)
-  sorted_list = list
-  for exp in 1..list.max.to_s.size
-    radix_ary = []
-    puts exp
-    for digit in 0..9
-      for i in 0..(list.size - 1)
-        if sorted_list[i].to_s.size  <  exp
-          radix_ary << sorted_list[i]
-        end
+  remainder = list
+  result = []
+  for digit in 1..list.max.to_s.size
+    # sort remainder list by radix digit
+    sorted_list = []
+    for n in 0..9
+      for idx in 0..(remainder.size - 1)
+        sorted_list << remainder[idx] if remainder[idx].to_s[-digit].to_i == n
       end
     end
-    p radix_ary
-    for digit in 0..9
-      for i in 0..(list.size - 1)
-        if sorted_list[i].to_s[-exp] == digit.to_s &&
-           sorted_list[i].to_s.size  >=  exp
-          radix_ary << sorted_list[i]
-        end
+    remainder = sorted_list
+    # shunt remainder elements of size == radix digit to result
+    used = []
+    for idx in 0..(remainder.size - 1)
+      if remainder[idx].to_s.size == digit
+        result << remainder[idx]
+        used << idx
       end
     end
-    p radix_ary
-    sorted_list = radix_ary
+    for idx in 0..(used.size - 1)
+      remainder.delete_at(used[idx])
+    end
   end
-  return sorted_list
+  return result
 end
 
 test = [493,812,715,710,195,36,1000,437,582,340,385]
-# test = [493,812,715,710,195,437,582,340,385]
 p test
 p radix(test)
