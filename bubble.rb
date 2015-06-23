@@ -2,8 +2,10 @@
 
 def bubble(list)
   sorted_list = list
+  # for each element
   for i in 0..(list.size - 1)
     for i2 in 1..(list.size - i - 1)
+      # swap each higher adjacent value to the right until you can't
       if sorted_list[i2] < sorted_list[i2 - 1]
         value_transfer = sorted_list[i2]
         sorted_list[i2] = sorted_list[i2 - 1]

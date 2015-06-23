@@ -12,7 +12,7 @@ def radix(list)
       end
     end
     remainder = sorted_list
-    # shunt remainder elements of size == radix digit to result
+    # on sorted remainder list, shunt elements of size == radix digit to result
     used = []
     for idx in 0..(remainder.size - 1)
       if remainder[idx].to_s.size == digit
@@ -20,6 +20,7 @@ def radix(list)
         used << idx
       end
     end
+    # then remove them from the remainder list
     for idx in 0..(used.size - 1)
       remainder.delete_at(used[idx])
     end
