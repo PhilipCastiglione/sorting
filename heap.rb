@@ -5,20 +5,6 @@ class Heap
     self.heapify
   end
 
-  # pretty(ish) print
-  def to_s
-    lines = Math.log2(@ary.size).floor
-    puts " "*2*(2**lines - 1) + "(#{@ary[0]})"
-    for i in 1..lines
-      nodes = ""
-      spacer = " "*2*((2**lines) - (2**i))
-      for i2 in (2**(i) - 1)..(2**(i + 1) - 2)
-        nodes += "(#{@ary[i2]}) "
-      end
-      puts spacer + nodes
-    end
-  end
-
   # swaps position of nodes
   def swap(idx1, idx2)
     @ary[idx1] += @ary[idx2]
@@ -68,8 +54,54 @@ class Heap
     end
   end
 
-end
+  # remove smallest accessible element one at a time
+  def sort(sorted_ary=[],target_indices=[0])
+    
+    def getTargetIndicesValues(target_indices)
+      target_indices_values = []
+      for i in 0..(target_indices.size-1)
+        target_indices_values << @ary[target_indices[i]]
+      end
+      return target_indices_values
+    end
 
-a = Heap.new([5,8,17,17,2,20,13,20,15,1,10,4])
-puts a
+    def addToSortedAry(sorted_ary)
+      sorted_ary << target_indices_values.min
+      return sorted_ary
+    end
+
+    sorted_ary = addToSortedAry(sorted_ary)
+    target_indices_values = getTargetIndicesValues(target_indices)
+    
+
+    sort(sorted_ary, target_indices)
+
+      @ary.delete_at(@ary.index(target_indices_values.min))
+      target_indices_values.push(getChildrenIdx(target_indices_values.min))
+      target_indices_values.delete_at(target_indices_values.find(target_indices_values.min))
+      sort
+    # @ary = sorted_ary
+  end
+
+  # pretty(ish) print
+  def to_s
+    lines = Math.log2(@ary.size).floor
+    puts " "*2*(2**lines - 1) + "(#{@ary[0]})"
+    for i in 1..lines
+      nodes = ""
+      spacer = " "*2*((2**lines) - (2**i))
+      for i2 in (2**(i) - 1)..(2**(i + 1) - 2)
+        nodes += "(#{@ary[i2]}) "
+      end
+      puts spacer + nodes
+    end
+  end
+
+end
+test = [5,8,17,17,2,20,13,20,15,1,10,4]
+p test
+h = Heap.new(test)
+puts h
+h.sort
+puts h
 # up to binary heap, now need to implement sort
