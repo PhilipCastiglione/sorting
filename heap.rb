@@ -1,4 +1,5 @@
 class Heap
+  attr_accessor :ary
 
   def initialize(ary)
     @ary = (ary)
@@ -55,32 +56,47 @@ class Heap
   end
 
   # remove smallest accessible element one at a time
-  def sort(sorted_ary=[],target_indices=[0])
-    
-    def getTargetIndicesValues(target_indices)
-      target_indices_values = []
+  def sort(sorted_ary=[],target_indices=[0], consumed_indices=[])
+
+    def getAccessibleMin(target_indices, consumed_indices)
+      target_vals = []
       for i in 0..(target_indices.size-1)
-        target_indices_values << @ary[target_indices[i]]
+        target_vals << @ary[target_indices[i]]
       end
-      return target_indices_values
+      a = nil
+      for i in 0..(@ary.size-1)
+        if @ary[i] == target_vals.compact.min &&
+           !consumed_indices.include?(i) &&
+           !a
+          a = i
+        end
+      end
+      return a
     end
 
-    def addToSortedAry(sorted_ary)
-      sorted_ary << target_indices_values.min
-      return sorted_ary
+    def addToSortedAry(sorted_ary, index)
+      return sorted_ary << @ary[index]
     end
 
-    sorted_ary = addToSortedAry(sorted_ary)
-    target_indices_values = getTargetIndicesValues(target_indices)
-    
+    def addToTargetIndices(target_indices, index)
+      children = getChildrenIdx(index)
+      for i in 0..(children.size-1)
+        target_indices << children[i] if @ary[children[i]]
+      end
+      return target_indices
+    end
 
-    sort(sorted_ary, target_indices)
+    localMinIdx = getAccessibleMin(target_indices, consumed_indices)
+    sorted_ary = addToSortedAry(sorted_ary, localMinIdx)
 
-      @ary.delete_at(@ary.index(target_indices_values.min))
-      target_indices_values.push(getChildrenIdx(target_indices_values.min))
-      target_indices_values.delete_at(target_indices_values.find(target_indices_values.min))
-      sort
-    # @ary = sorted_ary
+    consumed_indices << localMinIdx
+    unless @ary.size == consumed_indices.size
+      target_indices.delete(localMinIdx)
+      target_indices = addToTargetIndices(target_indices, localMinIdx)
+      sort(sorted_ary, target_indices, consumed_indices)
+    end
+
+    return sorted_ary
   end
 
   # pretty(ish) print
@@ -100,8 +116,4 @@ class Heap
 end
 test = [5,8,17,17,2,20,13,20,15,1,10,4]
 p test
-h = Heap.new(test)
-puts h
-h.sort
-puts h
-# up to binary heap, now need to implement sort
+p Heap.new(test).sort
