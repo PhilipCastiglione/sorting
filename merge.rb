@@ -2,52 +2,56 @@
 
 def merge(ary)
   split_ary = [ary]
-  for p in 1..(Math.log2(ary.first.size))
-    for i in 0..(split_ary.size - 1)
-      split_ary[i] = split(split_ary[i])
+  for power in 1..(Math.log2(ary.first.size))
+    for idx in 0..(split_ary.size - 1)
+      split_ary[idx] = split(split_ary[idx])
     end
     split_ary.flatten!(1)
   end
-  # return split_ary
   merge_ary = split_ary
-  for i in 1..1 #change this to the correct #
-    merge_ary = order(merge_ary, i)
+  for power in 1..(Math.log2(ary.first.size))
+    merge_ary = order(merge_ary, power)
   end
+  return merge_ary[0]
 end
 
 def order(ary, iteration)
   new_ary = []
-  for i in 0..(ary.size / 2**iteration - 1)
+  for topIdx in 1..((ary.size * 2**(iteration - 1)) / 2**iteration)
+    target_ary_size = 2**(iteration - 1)
+    ary1_position = 0
+    ary2_position = 0
+    target_ary_idx1 = (topIdx - 1) * 2
+    target_ary_idx2 = target_ary_idx1 + 1
     sub_ary = []
-    list1 = ary[2 * i]
-    idx1 = 0
-    list2 = ary[2* i + 1]
-    idx2 = 0
-    
-    def compare
-      # if list 1 is empty go within list 2
-      # if list 2 is empty go within list 1
-      # this for both lists are not empty
-      if list1[idx1] > list2[idx2]
-        #push list2idx2 into sub list
-        sub_ary << list2[idx2]
-        idx2 += 1
-      else
-        sub_ary << list1[idx1]
-        idx1 += 1
+    for el in 1..(target_ary_size * 2)
+      if ary1_position < target_ary_size
+        if ary2_position < target_ary_size
+          if ary[target_ary_idx1][ary1_position] <= ary[target_ary_idx2][ary2_position]
+            sub_ary << ary[target_ary_idx1][ary1_position]
+            ary1_position += 1
+          else
+            sub_ary << ary[target_ary_idx2][ary2_position]
+            ary2_position += 1
+          end
+        else
+          sub_ary << ary[target_ary_idx1][ary1_position]
+          ary1_position += 1
+        end
+      elsif ary2_position <= target_ary_size
+        sub_ary << ary[target_ary_idx2][ary2_position]
+        ary2_position += 1
       end
-      # if there's only one left, use that
-      # otherwise, recurse
     end
-
+    new_ary << sub_ary
   end
-  
+  return new_ary
 end
 
 def split(ary)
   [ary.slice(0, ary.size / 2), ary.slice(ary.size / 2, ary.size / 2)]
 end
 
-p merge([5,4,6,2,3,1,7,8])
-
-# goddamn refactor
+test = [5,4,6,2,3,1,7,8]
+p test
+p merge(test)
